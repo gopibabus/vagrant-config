@@ -1,0 +1,65 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  # Base box
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.boot_timeout = 500
+
+  # Boxes will only be checked for updates when the user runs
+  config.vm.box_check_update = true
+
+  # VirtualBox specific configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+  end
+
+  # Vagrant Plugins & Configuration
+  config.vagrant.plugins = ["vagrant-vbguest"]
+  config.vbguest.auto_update = false
+
+  # Copy files into vagrant Env
+  config.vm.provision "file",
+    source: "./config/git-config",
+    destination: "~/.gitconfig"
+  config.vm.provision "shell", path: "./config/common.sh"
+
+   # Web Server specific configuration
+  config.vm.define "web-server", primary: true do |web|
+    web.vm.hostname = "apache-web-server"
+    web.vm.network "forwarded_port", guest: 80, host: 8080
+    web.vm.network "private_network", ip: "192.168.10.2"
+    web.vm.provision "shell", path: "./config/web-server.sh"
+    web.vm.synced_folder "./project", "/vagrant"
+    web.vm.post_up_message = <<-MESSAGE
+    All Set!
+      This web server machine includes following features:
+        - Operating System : Ubuntu 18
+        - PHP 7.4
+        - Apache 2
+    MESSAGE
+  end
+
+   # Database specific configuration
+  config.vm.define "database" do |db|
+    db.vm.hostname = "mysql-database"
+    db.vm.network "private_network", ip: "192.168.10.3"
+    db.vm.provision "shell", path: "./config/database.sh"
+    db.vm.post_up_message = <<-MESSAGE
+    All Set!
+      This database machine includes following features:
+        - MySQL Server
+    MESSAGE
+  end
+
+  # Post Message
+  config.vm.post_up_message = <<-MESSAGE
+  All Set!
+  This common vagrant includes following features:
+    - Operating System : Ubuntu 20
+    - GIT, unzip
+  MESSAGE
+
+end

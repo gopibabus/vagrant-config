@@ -1,0 +1,12 @@
+[user]
+	name = Gopibabu Srungavarapu
+	email = s.gopibabu@gmail.com
+[core]
+	editor = vim --wait
+	autocrlf = input
+[diff]
+	tool = vim
+[difftool "vim"]
+	cmd = "code --wait --diff $LOCAL $REMOTE"
+[alias]
+	lg = log --pretty=format:'%Cgreen%an%Creset committed %h on %cd'
