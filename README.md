@@ -1,4 +1,4 @@
-# Vagrant Configuration
+![Vagrant Configuration](./banner.png)
 
 ### Stable Software Versions
 
