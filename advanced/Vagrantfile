@@ -1,0 +1,53 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  # Base box
+  config.vm.box = "ubuntu/bionic64"
+
+  # Boxes will only be checked for updates when the user runs
+  config.vm.box_check_update = true
+
+  # Plugin Configuration
+  # config.vbguest.auto_update = false
+
+  # Allow access only to 127.0.0.1 to disable public access
+  config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # Create a private network to use a specific IP.
+  # config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Share folders to the guest VM.
+  config.vm.synced_folder "./project", "/vagrant", :mount_options => ["dmode=777", "fmode=666"]
+
+
+  # VirtualBox specific configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "ubuntu_18"
+    vb.gui = false
+    vb.memory = "1024"
+  end
+
+  # Copy files to Vagrant Env
+  # We can use web URLs of config files instead of system path
+  config.vm.provision "file",
+    source: "./config/git-config",
+    destination: "~/.gitconfig"
+
+  # Enable provisioning with a shell script.
+  # We can use web URLs of bootstrap.sh instead of system path
+  config.vm.provision "shell", path: "./config/bootstrap.sh"
+
+  # Post Message
+  config.vm.post_up_message = <<-MESSAGE
+  All Set!
+  This installation of vagrant includes following features:
+    - Operating System : Ubuntu 20
+    - GIT, unzip
+    - PHP 7.4
+    - Apache 2
+    - MySQL Server
+  MESSAGE
+
+end
