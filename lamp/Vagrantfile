@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Variables
+VAGRANT_VERSION = '2'
+
+Vagrant.configure(VAGRANT_VERSION) do |config|
+  config.vm.define "ubuntu_18" do |web|
+    web.vm.box = 'ubuntu/bionic64'
+    web.vm.network "private_network", ip: "192.168.55.10"
+    web.vm.synced_folder '.', '/var/www/'
+  end
+
+  # Virtualbox Configuration
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "ubuntu_18"
+    vb.cpus = 2
+    vb.memory = 1024
+  end
+
+  # Provisioning(actions to perform after initializing an OS) options
+  config.vm.provision "shell", path: "bootstrap.sh"
+
+  config.vm.post_up_message = <<-MESSAGE
+  All Set!
+  This installation of vagrant includes following features:
+    - Added private network 192.168.55.10
+    - Redirected Guest port 22 -> Host port 2222
+    - Apache2
+    - MySQL
+    - PHPMyAdmin
+    - PHP 7.4
+    - Git
+    - Composer
+    - VIM Editor
+    - Docker
+  MESSAGE
+end
